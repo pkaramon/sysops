@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/lab1/zad1/countdown",
+            "program": "${workspaceFolder}/cw01/zad1/countdown",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

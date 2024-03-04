@@ -1,5 +1,7 @@
-CXX = gcc
-CFLAGS = -Wall -Wextra -g
+CC = gcc
+CFLAGS = -Wall -std=c17 -g
+
+.PHONY: clean all
 
 all: countdown
 
@@ -7,12 +9,10 @@ SOURCES = countdown.c
 OBJECTS = $(SOURCES:.c=.o)
 
 countdown: $(OBJECTS)
-	$(CXX) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CXX) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm $(OBJECTS) countdown
-
-.PHONY: clean
