@@ -1,0 +1,17 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "run make",
+            "command": "make",
+            "args": [
+                "all"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/lab1/"
+            },
+            "problemMatcher": [],
+        }
+    ],
+    "version": "2.0.0"
+}
