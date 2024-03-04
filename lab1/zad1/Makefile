@@ -10,7 +10,7 @@ countdown: $(OBJECTS)
 	$(CXX) $(CFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CXX) $(CFLAGS) -c $^ -o $@
 
 clean:
 	rm $(OBJECTS) countdown
