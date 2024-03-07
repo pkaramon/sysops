@@ -8,7 +8,7 @@
                 "all"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/cw01/zad1/"
+                "cwd": "${workspaceFolder}/cw01/"
             },
             "problemMatcher": [],
         }
