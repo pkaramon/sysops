@@ -1,38 +1,59 @@
 CC = gcc
-CFLAGS = -Wall -std=c17 -g -O0
 
-.PHONY: clean all
+BUILD_DIR=build
+BUILD := debug
 
-all: main_dynamic
+cflags.common := -Wall -Wextra -std=c17
+cflags.debug := -g -O0
+cflags.release := -O2
+CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 
-SOURCES = main.c collatz.c
-OBJECTS = $(SOURCES:.c=.o)
+.PHONY: clean all collatz_static collatz_shared main_static main_shared main_dynamic
 
-main_static: main.o libcollatz.a
-	$(CC) $(CFLAGS) $^ -o $@
+all: main_static main_shared main_dynamic
 
-main_shared: main.o libcollatz.so.1 libcollatz.so
-	$(CC) $(CFLAGS) main.o -lcollatz -L./ -Wl,-rpath,. -o $@
+main_static: collatz_static main.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ main.c $(BUILD_DIR)/libcollatz_static.a
 
-main_dynamic: main.c libcollatz.so.1 libcollatz.so
-	$(CC) $(CFLAGS) main.c -lcollatz -L./ -D USE_LIB_DYNAMIC -Wl,-rpath,. -o $@
+main_shared: collatz_shared main.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ main.c -L./build/ -lcollatz_shared -Wl,-rpath=./build
+
+main_dynamic: collatz_shared main.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ main.c -ldl  -D USE_LIB_DYNAMIC -Wl,-rpath=./build
 
 
-libcollatz.a: collatz.c
-	$(CC) $(CFLAGS) -c collatz.c -o collatz.o
-	ar rcs $@ collatz.o
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-libcollatz.so.1.0.0: collatz.c
-	$(CC) $(CFLAGS) -fPIC -c collatz.c -o collatz.o
-	$(CC) $(CFLAGS) -shared -Wl,-soname,libcollatz.so.1 -o $@ collatz.o -lc
 
-libcollatz.so: libcollatz.so.1.0.0
-	ln -s $^ $@
+collatz_static:  $(BUILD_DIR) $(BUILD_DIR)/libcollatz_static.a
+collatz_shared: $(BUILD_DIR) $(BUILD_DIR)/libcollatz_shared.so
 
-libcollatz.so.1: libcollatz.so.1.0.0
-	ln -s $^ $@
+# static library
+# first we need compiled objects files(prerequisite)
+# then we create an archive using ar
+#  	r -> insert the files into archive with replacement
+#  	c -> create archive if does not exist
+#  	s -> add index to archive or update if it
+# which then can be statically linked
+$(BUILD_DIR)/libcollatz_static.a: collatz/collatz.c
+	$(CC) $(CFLAGS) -c $^ -o $(BUILD_DIR)/collatz.o
+	ar rcs $@ $(BUILD_DIR)/collatz.o
+
+# shared library
+# when creating a object files we must pass -fPIC
+# PIC - Position Independent Code,
+# the code is generated in a way that it can be loaded and executed at any
+# memory address without the need for runtime relocation. This is achieved
+# through indirect addressing of data and functions.
+$(BUILD_DIR)/libcollatz_shared.so: collatz/collatz.c
+	$(CC) $(CFLAGS) -fPIC -c $< -o $(BUILD_DIR)/collatz.o
+	$(CC) -shared -o $@ $(BUILD_DIR)/collatz.o
+
 
 clean:
-	rm *.a $(OBJECTS) main_static main_shared main_dynamic libcollatz.*
+	rm $(BUILD_DIR) -rf
 
-# objdump -t
+
+# objdump -t -> symbol table
+# objdump -d -> disassembly
