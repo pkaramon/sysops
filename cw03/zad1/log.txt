@@ -1,0 +1,47 @@
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ make test_perf_blocks
+gcc -g -O0 -Wall -Wextra -std=c17 reverse.c -o build/reverse_blocks -DBLOCK_SIZE=1024
+PROGRAM: reverse_blocks PERFORMANCE TEST
+small.bin took 0.00 seconds
+medium.bin took 0.00 seconds
+big.bin took 0.07 seconds
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ make test_perf_bytes
+gcc -g -O0 -Wall -Wextra -std=c17 reverse.c -o build/reverse_bytes
+PROGRAM: reverse_bytes PERFORMANCE TEST
+small.bin took 0.00 seconds
+medium.bin took 1.15 seconds
+big.bin took 11.50 seconds
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ make test_functional_blocks
+make: *** No rule to make target 'test_functional_blocks'.  Stop.
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ make test_func_blocks
+gcc -g -O0 -Wall -Wextra -std=c17 reverse.c -o build/reverse_blocks -DBLOCK_SIZE=1024
+PROGRAM: reverse_blocks FUNCTIONAL TEST
+Files ./test_files/small.bin and ./test_files/small.bin.reverse_blocks_rev_rev are identical
+Files ./test_files/medium.bin and ./test_files/medium.bin.reverse_blocks_rev_rev are identical
+Files ./test_files/big.bin and ./test_files/big.bin.reverse_blocks_rev_rev are identical
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ make test_func_bytes
+gcc -g -O0 -Wall -Wextra -std=c17 reverse.c -o build/reverse_bytes
+PROGRAM: reverse_bytes FUNCTIONAL TEST
+Files ./test_files/small.bin and ./test_files/small.bin.reverse_bytes_rev_rev are identical
+Files ./test_files/medium.bin and ./test_files/medium.bin.reverse_bytes_rev_rev are identical
+Files ./test_files/big.bin and ./test_files/big.bin.reverse_bytes_rev_rev are identical
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ printf "hello world" > example.txt
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ ./build/reverse_bytes example.txt out.txt
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ cat out.txt
+dlrow ollehpiotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ ./build/reverse_blocks example.txt out2.txt
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ ls
+Makefile  build  example.txt  out.txt  out2.txt  reverse.c  test_files  tester  tests-results.txt
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ ll
+total 44
+drwxr-xr-x 4 piotr piotr 4096 Mar 16 21:09 ./
+drwxr-xr-x 4 piotr piotr 4096 Mar 14 11:55 ../
+-rw-r--r-- 1 piotr piotr 1059 Mar 16 21:04 Makefile
+drwxr-xr-x 2 piotr piotr 4096 Mar 16 21:08 build/
+-rw-r--r-- 1 piotr piotr   11 Mar 16 21:09 example.txt
+-rw-r--r-- 1 piotr piotr   11 Mar 16 21:09 out.txt
+-rw-r--r-- 1 piotr piotr   11 Mar 16 21:09 out2.txt
+-rw-r--r-- 1 piotr piotr 2848 Mar 16 15:42 reverse.c
+drwxr-xr-x 2 piotr piotr 4096 Mar 16 21:08 test_files/
+-rwxr-xr-x 1 piotr piotr 1163 Mar 16 21:01 tester*
+-rw-r--r-- 1 piotr piotr  878 Mar 16 21:09 tests-results.txt
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$ cat out2.txt
+dlrow ollehpiotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad1$

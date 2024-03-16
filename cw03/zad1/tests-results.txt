@@ -1,0 +1,16 @@
+PROGRAM: reverse_blocks PERFORMANCE TEST
+small.bin took 0.00 seconds
+medium.bin took 0.00 seconds
+big.bin took 0.07 seconds
+PROGRAM: reverse_bytes PERFORMANCE TEST
+small.bin took 0.00 seconds
+medium.bin took 1.15 seconds
+big.bin took 11.50 seconds
+PROGRAM: reverse_blocks FUNCTIONAL TEST
+Files ./test_files/small.bin and ./test_files/small.bin.reverse_blocks_rev_rev are identical
+Files ./test_files/medium.bin and ./test_files/medium.bin.reverse_blocks_rev_rev are identical
+Files ./test_files/big.bin and ./test_files/big.bin.reverse_blocks_rev_rev are identical
+PROGRAM: reverse_bytes FUNCTIONAL TEST
+Files ./test_files/small.bin and ./test_files/small.bin.reverse_bytes_rev_rev are identical
+Files ./test_files/medium.bin and ./test_files/medium.bin.reverse_bytes_rev_rev are identical
+Files ./test_files/big.bin and ./test_files/big.bin.reverse_bytes_rev_rev are identical
