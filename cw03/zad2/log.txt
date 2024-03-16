@@ -1,0 +1,16 @@
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad2$ make
+mkdir -p ./build
+gcc -g -O0 -Wall -Wextra -std=c17 main.c -o build/sizes
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad2$ ./build/sizes
+Makefile 335
+main.c 1271
+total size: 1606
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad2$ wc --bytes *
+    335 Makefile
+wc: build: Is a directory
+      0 build
+   1271 main.c
+   1606 total
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad2$ make clean
+rm build -rf
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw03/zad2$
