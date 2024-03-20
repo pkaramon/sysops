@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   } else if (argc == 2) {
     dirpath = argv[1];
   } else {
-    fprintf(stderr, "Wrong number of arguments %d\n", argc);
+    fprintf(stderr, "Wrong number of arguments %d\n", argc - 1);
     return EXIT_FAILURE;
   }
 
