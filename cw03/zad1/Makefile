@@ -1,7 +1,7 @@
 CC = gcc
 
 BUILD_DIR=build
-BUILD := debug
+BUILD := release
 
 cflags.common := -Wall -Wextra -std=c17
 cflags.debug := -g -O0
@@ -12,7 +12,7 @@ TEST_RESULTS := tests-results.txt
 
 .PHONY: clean all test
 
-all: reverse_bytes reverse_blocks test_perf_bytes test_perf_blocks test_func_bytes test_func_blocks
+all: reverse_bytes reverse_blocks
 
 reverse_bytes: reverse.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@

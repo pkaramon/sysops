@@ -78,19 +78,12 @@ int reverse_file(FILE *infile, FILE *outfile) {
 }
 #endif
 
-int validate_number_of_arguments(int argc) {
+int main(int argc, char const *argv[]) {
   int n_args = argc - 1;
   if (n_args != 2) {
     fprintf(stderr,
             "invalid number of arguments: %d, provide paths to two files\n",
             n_args);
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
-}
-
-int main(int argc, char const *argv[]) {
-  if (validate_number_of_arguments(argc) == EXIT_FAILURE) {
     return EXIT_FAILURE;
   }
 
