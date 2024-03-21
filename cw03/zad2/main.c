@@ -7,7 +7,7 @@
 int traverse_directory(const char *dirpath, DIR *dirp) {
   if (chdir(dirpath) == -1) {
     perror("cannot cd into passed directory");
-    return EXIT_FAILURE;
+    return -1;
   }
 
   struct dirent *entry;
@@ -16,7 +16,7 @@ int traverse_directory(const char *dirpath, DIR *dirp) {
   while ((entry = readdir(dirp)) != NULL) {
     if (stat(entry->d_name, &fileinfo) == -1) {
       perror("stat failed");
-      return EXIT_FAILURE;
+      return -1;
     }
     if (S_ISDIR(fileinfo.st_mode))
       continue;
@@ -25,7 +25,7 @@ int traverse_directory(const char *dirpath, DIR *dirp) {
     all_files_size += fileinfo.st_size;
   }
   printf("total size: %lld\n", all_files_size);
-  return EXIT_SUCCESS;
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  if (traverse_directory(dirpath, dirp) != EXIT_SUCCESS) {
+  if (traverse_directory(dirpath, dirp) == -1) {
     fprintf(stderr, "could not successfully traverse the directory\n");
   }
 

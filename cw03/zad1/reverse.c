@@ -11,7 +11,7 @@
 int reverse_file(FILE *infile, FILE *outfile) {
   if (fseek(infile, -1, SEEK_END) != 0) {
     perror("Could not seek the input file");
-    return EXIT_FAILURE;
+    return -1;
   }
 
   long bytes_remaninig = ftell(infile) + 1;
@@ -19,16 +19,17 @@ int reverse_file(FILE *infile, FILE *outfile) {
     int c = fgetc(infile);
     if (ferror(infile)) {
       perror("Could not read from infile");
-      return EXIT_FAILURE;
+      return -1;
     }
     if (fputc(c, outfile) == EOF) {
       perror("Failed to write to file");
+      return -1;
     }
     fseek(infile, -2, SEEK_CUR);
     bytes_remaninig--;
   }
 
-  return EXIT_SUCCESS;
+  return 0;
 }
 #else
 void reverse_text(char *text, size_t length) {
@@ -46,21 +47,21 @@ void reverse_text(char *text, size_t length) {
 int reverse_file(FILE *infile, FILE *outfile) {
   if (fseek(infile, 0, SEEK_END) != 0) {
     perror("Could not seek the input file");
-    return EXIT_FAILURE;
+    return -1;
   }
 
   long bytes_remaining = ftell(infile);
   char buf[BLOCK_SIZE];
   if (fseek(infile, bytes_remaining % BLOCK_SIZE * (-1), SEEK_END)) {
     perror("Could not seek the input file");
-    return EXIT_FAILURE;
+    return -1;
   }
 
   while (bytes_remaining > 0) {
     size_t bytes_read = fread(buf, sizeof(char), BLOCK_SIZE, infile);
     if (ferror(infile)) {
       perror("Error when reading input file");
-      return EXIT_FAILURE;
+      return -1;
     }
     bytes_remaining -= bytes_read;
 
@@ -68,13 +69,13 @@ int reverse_file(FILE *infile, FILE *outfile) {
     size_t written_bytes = fwrite(buf, sizeof(char), bytes_read, outfile);
     if (written_bytes < bytes_read) {
       perror("Failed to write to output file");
-      return EXIT_FAILURE;
+      return -1;
     }
 
     fseek(infile, -BLOCK_SIZE - bytes_read, SEEK_CUR);
   }
 
-  return EXIT_SUCCESS;
+  return 0;
 }
 #endif
 
@@ -104,7 +105,7 @@ int main(int argc, char const *argv[]) {
 
   fclose(infile);
   fclose(outfile);
-  if (exit_status != 0) {
+  if (exit_status == -1) {
     fprintf(stderr, "Reversing the input fail failed\n");
     return EXIT_FAILURE;
   }

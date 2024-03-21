@@ -11,7 +11,7 @@ mkdir -p "$test_dir"
 
 dd if=/dev/urandom of="$test_dir/small.bin" bs=1K count=1 >/dev/null 2>&1
 dd if=/dev/urandom of="$test_dir/medium.bin" bs=1M count=1 >/dev/null 2>&1
-dd if=/dev/urandom of="$test_dir/big.bin" bs=10M count=1 >/dev/null 2>&1
+dd if=/dev/urandom of="$test_dir/big.bin" bs=5M count=1 >/dev/null 2>&1
 
 test_files="small.bin medium.bin big.bin"
 if [ "$2" = "performance" ]; then
