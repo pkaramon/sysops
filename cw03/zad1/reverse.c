@@ -1,8 +1,5 @@
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -54,7 +51,10 @@ int reverse_file(FILE *infile, FILE *outfile) {
 
   long bytes_remaining = ftell(infile);
   char buf[BLOCK_SIZE];
-  fseek(infile, bytes_remaining % BLOCK_SIZE * (-1), SEEK_END);
+  if (fseek(infile, bytes_remaining % BLOCK_SIZE * (-1), SEEK_END)) {
+    perror("Could not seek the input file");
+    return EXIT_FAILURE;
+  }
 
   while (bytes_remaining > 0) {
     size_t bytes_read = fread(buf, sizeof(char), BLOCK_SIZE, infile);
