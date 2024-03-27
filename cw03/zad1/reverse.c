@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -19,6 +20,7 @@ int reverse_file(FILE *infile, FILE *outfile) {
     int c = fgetc(infile);
     if (ferror(infile)) {
       perror("Could not read from infile");
+
       return -1;
     }
     if (fputc(c, outfile) == EOF) {

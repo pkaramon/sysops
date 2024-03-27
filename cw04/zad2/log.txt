@@ -1,0 +1,23 @@
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw04/zad2$ make
+mkdir -p build
+gcc -O2 -Wall -Wextra -std=c17 main.c -o build/parentchild
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw04/zad2$ ./build/parentchild .
+program name: parentchild
+parent process
+parent pid = 307676, child pid = 307677
+child process
+child pid = 307677, parent pid = 307676
+child's local = 1, child's global = 1
+Makefile  build  main.c
+Child exit code: 0
+Parent's local = 0, parent's global = 0
+piotr@DESKTOP-6A1J8DQ:~/dev/sysops/cw04/zad2$ ./build/parentchild doesnotexist
+program name: parentchild
+parent process
+parent pid = 307700, child pid = 307701
+child process
+child pid = 307701, parent pid = 307700
+child's local = 1, child's global = 1
+ls: cannot access 'doesnotexist': No such file or directory
+Child exit code: 2
+Parent's local = 0, parent's global = 0
