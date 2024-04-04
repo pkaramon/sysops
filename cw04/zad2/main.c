@@ -37,15 +37,13 @@ int main(int argc, char *argv[]) {
     }
   } else {
     // in parent process
-    printf("parent process\n");
-    printf("parent pid = %d, child pid = %d\n", (int)getpid(), (int)pid);
-
     int status = 0;
     wait(&status);
     int child_exit_status = WEXITSTATUS(status);
 
+    printf("parent process\n");
+    printf("parent pid = %d, child pid = %d\n", (int)getpid(), (int)pid);
     printf("Child exit code: %d\n", child_exit_status);
-
     printf("Parent's local = %d, parent's global = %d\n", local, global);
     return child_exit_status;
   }

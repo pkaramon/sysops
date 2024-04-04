@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 
   char *endptr;
   errno = 0;
+
   long n_procs = strtol(argv[1], &endptr, 10);
   if (errno == ERANGE || *endptr != '\0') {
     fprintf(stderr, "invalid number of processes: %s\n", argv[1]);
@@ -22,7 +23,8 @@ int main(int argc, char *argv[]) {
     pid_t pid = fork();
     if (pid < 0) {
       perror("fork has failed");
-      exit(EXIT_FAILURE);
+      for (long j = 0; j < i; j++) wait(NULL);
+      return(EXIT_FAILURE);
     } else if (pid == 0) {
       printf("parent pid: %d, my pid: %d\n", (int)getppid(), (int)getpid());
       exit(EXIT_SUCCESS);
@@ -34,4 +36,6 @@ int main(int argc, char *argv[]) {
   }
 
   printf("number of processes: %ld\n", n_procs);
+
+  return EXIT_SUCCESS;
 }
