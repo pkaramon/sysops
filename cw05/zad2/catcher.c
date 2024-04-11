@@ -8,7 +8,7 @@
 #define WORK_PRINT_N_CHANGES 2
 #define WORK_FINISH 3
 
-int work_type_updates = 0;
+volatile int work_type_updates = 0;
 
 void work_dispatch(int work_type) {
   switch (work_type) {
@@ -59,5 +59,5 @@ int main(void) {
   while (1)
     pause();
 
-  return 0;
+  return EXIT_SUCCESS;
 }
