@@ -8,8 +8,7 @@
 #define WORK_PRINT_N_CHANGES 2
 #define WORK_FINISH 3
 
-int work_type_changes = 0;
-int last_work_type = -1;
+int work_type_updates = 0;
 
 void work_dispatch(int work_type) {
   switch (work_type) {
@@ -18,30 +17,25 @@ void work_dispatch(int work_type) {
       printf("%d\n", i);
     }
     break;
-  case WORK_PRINT_N_CHANGES: {
-    printf("work type changes: %d\n", work_type_changes);
+  case WORK_PRINT_N_CHANGES:
+    printf("work type changes: %d\n", work_type_updates);
     break;
-  }
   }
 }
 
 void sig_handler(int __attribute__((unused)) sig, siginfo_t *siginfo,
                  void __attribute__((unused)) * context) {
-  printf("receive from PID: %ld\n", (long)siginfo->si_pid);
+  printf("received from PID: %ld\n", (long)siginfo->si_pid);
 
   int work_type = siginfo->si_value.sival_int;
   work_dispatch(work_type);
 
-  if (last_work_type != work_type) {
-    work_type_changes++;
-    last_work_type = work_type;
-  }
+  work_type_updates++;
 
   if (kill(siginfo->si_pid, SIGUSR1) == -1) {
     perror("could not sent confirmation to sender");
     exit(EXIT_FAILURE);
   }
-
   if (work_type == WORK_FINISH) {
     printf("exiting...\n");
     exit(EXIT_SUCCESS);
