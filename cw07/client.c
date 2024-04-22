@@ -55,7 +55,7 @@ void handle_text_input(mqd_t server_q_fd, int client_id)
 void cleanup(mqd_t server_q_fd, mqd_t client_q_fd, const char* client_q_name)
 {
     mq_close(server_q_fd);
-    mq_close(server_q_fd);
+    mq_close(client_q_fd);
     mq_unlink(client_q_name);
 }
 
@@ -77,6 +77,7 @@ int main()
     mqd_t server_q_fd = mq_open(SERVER_QUEUE_NAME, O_WRONLY);
     if (server_q_fd < 0) {
         perror("client: mq_open with server");
+        mq_close(client_q_fd);
         mq_unlink(client_q_name);
         return EXIT_FAILURE;
     }
