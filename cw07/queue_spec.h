@@ -7,7 +7,7 @@
 #define MAX_MESSAGES 10
 
 
-typedef enum { INIT, RECEIVE_ID, TEXT } msg_type_t;
+typedef enum { INIT, RECEIVE_ID, TEXT, CLIENT_EXIT } msg_type_t;
 
 typedef struct {
     msg_type_t type;
