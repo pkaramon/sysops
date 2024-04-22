@@ -2,15 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 const double range_start = 0.0;
 const double range_stop = 1.0;
 
-double calculate_part(double start, double dx, long steps)
-{
+double calculate_part(double start, double dx, long steps) {
     double area = 0.0;
     for (long i = 0; i < steps; i++) {
         double x = start + i * dx;
@@ -20,22 +17,20 @@ double calculate_part(double start, double dx, long steps)
     return area;
 }
 
-int distribute_calculations(long n_processes, long n_intervals, double dx, int *pipe_fds)
-{
+int distribute_calculations(long n_processes, long n_intervals, double dx, int *pipe_fds) {
     long steps_per_process = n_intervals / n_processes;
     for (long i = 0; i < n_processes; i++) {
         int pid = fork();
         if (pid == -1) {
             perror("fork");
             return -1;
-        }
-        else if (pid == 0) {
+        } else if (pid == 0) {
             close(pipe_fds[2 * i]);
 
             double result =
-                calculate_part(range_start + i * steps_per_process * dx, dx,
-                               i == n_processes - 1 ? steps_per_process + n_intervals % n_processes
-                                                    : steps_per_process);
+                    calculate_part(range_start + i * steps_per_process * dx, dx,
+                                   i == n_processes - 1 ? steps_per_process + n_intervals % n_processes
+                                                        : steps_per_process);
 
             if (write(pipe_fds[2 * i + 1], &result, sizeof(result)) < 0) {
                 fprintf(stderr, "failed to write to the pipe\n");
@@ -43,15 +38,14 @@ int distribute_calculations(long n_processes, long n_intervals, double dx, int *
             }
 
             exit(0);
-        }
-        else {
+        } else {
             close(pipe_fds[2 * i + 1]);
         }
     }
+    return 0;
 }
 
-int write_time_to_file(double elapsed_time, double dx, long n_processes)
-{
+int write_time_to_file(double elapsed_time, double dx, long n_processes) {
     FILE *fp;
     const char *filename = "time-raport.txt";
 
@@ -74,8 +68,7 @@ int write_time_to_file(double elapsed_time, double dx, long n_processes)
     return 0;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     if (argc != 3) {
         printf("Usage: %s <dx> <n_processes>\n", argv[0]);
         return EXIT_FAILURE;
@@ -94,7 +87,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    long n_intervals = (long)ceil((range_stop - range_start) / dx);
+    long n_intervals = (long) ceil((range_stop - range_start) / dx);
     if (n_intervals < n_processes) {
         fprintf(stderr, "too many processes for given dx\n");
         return EXIT_FAILURE;

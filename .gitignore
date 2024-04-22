@@ -53,3 +53,9 @@ dkms.conf
 
 # ccls
 *.ccls-cache
+
+# clion
+.idea/*
+
+# cmake-build
+cmake-build-debug
