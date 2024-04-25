@@ -9,9 +9,14 @@
 
 #include "./queue_spec.h"
 
-_Noreturn void listen_for_messages(mqd_t client_q_fd)
+volatile int is_running = 1;
+void sig_handler(int sig_no) {
+    is_running = 0;
+}
+
+void listen_for_messages(mqd_t client_q_fd)
 {
-    while (1) {
+    while (is_running) {
         msg_t msg;
         if (mq_receive(client_q_fd, (char*)&msg, sizeof(msg), NULL) < 0) {
             perror("client: mg_receive from server text msg");
@@ -24,7 +29,7 @@ _Noreturn void listen_for_messages(mqd_t client_q_fd)
 
 void handle_text_input(mqd_t server_q_fd, int client_id)
 {
-    while (1) {
+    while (is_running) {
         char buf[MAX_MSG_BUF_SIZE];
         if (fgets(buf, sizeof(buf), stdin) == NULL) {
             fprintf(stderr, "could not read in your message");
@@ -47,8 +52,9 @@ void handle_text_input(mqd_t server_q_fd, int client_id)
 
         if (mq_send(server_q_fd, (char*)&msg, sizeof(msg), 1) < 0) {
             perror("client: mq_send message");
+        } else {
+            printf("sent\n");
         }
-        printf("sent\n");
     }
 }
 
@@ -100,6 +106,9 @@ int main()
     int client_id = id_msg.id;
     printf("got id: %d\n", client_id);
 
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
+
     pid_t listener_pid = fork();
 
     if (listener_pid < 0) {
@@ -111,10 +120,10 @@ int main()
     }
     else {
         handle_text_input(server_q_fd, client_id);
-        kill(listener_pid, SIGTERM);
+        kill(listener_pid, SIGKILL);
 
         msg_t msg = {.id = client_id, .type = CLIENT_EXIT};
-        if (mq_send(server_q_fd, (char*)&msg, sizeof(msg), 1) < 0) {
+        if (mq_send(server_q_fd, (char*)&msg, sizeof(msg), 2) < 0) {
             perror("mq_send client exit");
         }
 

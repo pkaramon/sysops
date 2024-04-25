@@ -9,7 +9,7 @@
 #include "./queue_spec.h"
 
 int curr_max_client_num = 0;
-mqd_t client_queues[MAX_CLIENTS] = {0};
+mqd_t client_queues[MAX_CLIENTS] = {-1};
 
 
 void handle_init_message(mqd_t *client_qs, msg_t *message)
@@ -33,7 +33,7 @@ void handle_text_message(mqd_t *client_qs, msg_t *message)
 {
     printf("got TEXT message %d %s\n", message->id, message->text);
     for (int i = 0; i < curr_max_client_num; i++) {
-        if (client_qs[i] == 0) continue;
+        if (client_qs[i] == -1) continue;
 
         if (mq_send(client_qs[i], (char *)message, sizeof(*message), 1) < 0) {
             fprintf(stderr, "could not broadcast the message to client with id: %d\n", i);
@@ -49,7 +49,7 @@ void handle_client_exit_message(mqd_t *client_qs, msg_t *message)
     printf("got CLIENT EXIT message\n");
     if (0 <= message->id && message->id < MAX_CLIENTS) {
         mq_close(client_qs[message->id]);
-        client_qs[message->id] = 0;
+        client_qs[message->id] = -1;
     }
 }
 
@@ -72,12 +72,11 @@ void dispatch_message_type(mqd_t *client_qs, msg_t *message)
 }
 
 
-void interupt_handler(int __attribute__((unused)) sig_no)
+void sig_handler(int sig_no)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (client_queues[i] != 0) {
-            printf("there are still clients connected to the server\n");
-            return;
+        if (client_queues[i] != -1) {
+            mq_close(client_queues[i]);
         }
     }
 
@@ -88,7 +87,11 @@ void interupt_handler(int __attribute__((unused)) sig_no)
 
 int main()
 {
-    signal(SIGINT, interupt_handler);
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        client_queues[i] = -1;
+    }
+    
+
 
     struct mq_attr q_attrs = {
         .mq_flags = 0, .mq_maxmsg = MAX_MESSAGES, .mq_msgsize = sizeof(msg_t), .mq_curmsgs = 0};
@@ -102,6 +105,9 @@ int main()
     printf("Started listening...\n");
     while (1) {
         msg_t message;
+        
+        signal(SIGINT, sig_handler);
+        signal(SIGTERM, sig_handler);
 
         printf("waiting for messages\n");
         if (mq_receive(queue, (char *)&message, sizeof(message), NULL) < 0) {
