@@ -11,7 +11,6 @@
 int curr_max_client_num = 0;
 mqd_t client_queues[MAX_CLIENTS] = {-1};
 
-
 void handle_init_message(mqd_t *client_qs, msg_t *message)
 {
     printf("got INIT message\n");
@@ -71,7 +70,6 @@ void dispatch_message_type(mqd_t *client_qs, msg_t *message)
     }
 }
 
-
 void sig_handler(int sig_no)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -90,8 +88,6 @@ int main()
     for (int i = 0; i < MAX_CLIENTS; i++) {
         client_queues[i] = -1;
     }
-    
-
 
     struct mq_attr q_attrs = {
         .mq_flags = 0, .mq_maxmsg = MAX_MESSAGES, .mq_msgsize = sizeof(msg_t), .mq_curmsgs = 0};
@@ -105,7 +101,7 @@ int main()
     printf("Started listening...\n");
     while (1) {
         msg_t message;
-        
+
         signal(SIGINT, sig_handler);
         signal(SIGTERM, sig_handler);
 

@@ -12,6 +12,7 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 .PHONY: clean all
 
 all: printers_server users_client
+	rm /dev/shm/* -rf
 
 printers_server: printers_server.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@  -lrt  -lpthread

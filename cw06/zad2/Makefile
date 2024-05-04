@@ -13,10 +13,10 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 all: caller calculator
 
 caller: caller.c | $(BUILD_DIR)
-	$(CC) $(CLFAGS) $^ -o $(BUILD_DIR)/$@ -lm
+	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@ -lm
 
 calculator: calculator.c | $(BUILD_DIR)
-	$(CC) $(CLFAGS) $^ -o $(BUILD_DIR)/$@ -lm
+	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@ -lm
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)

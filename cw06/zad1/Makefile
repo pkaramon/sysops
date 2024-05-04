@@ -13,7 +13,7 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 all: main
 
 main: main.c | $(BUILD_DIR)
-	$(CC) $(CLFAGS) $^ -o $(BUILD_DIR)/$@ -lm
+	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@ -lm
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)

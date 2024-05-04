@@ -2,21 +2,16 @@
 
 #include <semaphore.h>
 
-#define PRINTER_BUFFER_SIZE 10
+#define PRINTER_BUFFER_SIZE 2
 #define SHM_NAME "/shm_printers_server"
 #define MAX_PRINTERS 50
-
-typedef enum { PRINTER_IDLE, PRINTER_WORKING } printer_state_t;
-
-typedef struct {
-    sem_t sem;
-    char buffer[PRINTER_BUFFER_SIZE];
-    printer_state_t state;
-} printer_t;
+#define MAX_JOBS 10
 
 typedef struct {
-    printer_t printers[MAX_PRINTERS];
-    long number_of_printers;
-} printer_list_t;
-
-
+    char jobs[MAX_JOBS][PRINTER_BUFFER_SIZE];
+    int head;
+    int tail;
+    sem_t mutex;
+    sem_t empty;
+    sem_t full;
+} print_queue_t;

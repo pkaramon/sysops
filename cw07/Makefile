@@ -13,10 +13,10 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 all: client server
 
 client: client.c | $(BUILD_DIR)
-	$(CC) $(CLFAGS) $^ -o $(BUILD_DIR)/$@  -lrt
+	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@  -lrt
 
 server: server.c | $(BUILD_DIR)
-	$(CC) $(CLFAGS) $^ -o $(BUILD_DIR)/$@ -lrt
+	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/$@ -lrt
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)

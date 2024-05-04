@@ -1,2 +1,2 @@
 #pragma once
-void setup_printer_list(printer_list_t* printer_list, long n_printers);
+void setup_printer_list(print_queue_t* printer_list, long n_printers);
