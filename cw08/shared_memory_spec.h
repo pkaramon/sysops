@@ -2,7 +2,7 @@
 
 #include <semaphore.h>
 
-#define PRINTER_BUFFER_SIZE 2
+#define PRINTER_BUFFER_SIZE 3
 #define SHM_NAME "/shm_printers_server"
 #define MAX_PRINTERS 50
 #define MAX_JOBS 10

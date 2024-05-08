@@ -49,9 +49,10 @@ void printer_process(print_queue_t* queue, long printer_id)
     printf("printer %ld is ready \n", printer_id);
     while (keep_running) {
         sem_wait(&queue->full);
+        //
         sem_wait(&queue->mutex);
 
-        char job[PRINTER_BUFFER_SIZE];
+        char job[PRINTER_BUFFER_SIZE] = {0};
 
         memcpy(job, queue->jobs[queue->head], PRINTER_BUFFER_SIZE);
         queue->head = (queue->head + 1) % MAX_JOBS;
@@ -130,8 +131,7 @@ int main(int argc, char const* argv[])
         }
     }
 
-    while (keep_running)
-        ;
+    while (keep_running);
 
     for (long i = 0; i < n_printers; i++) {
         if (pids[i] != 0) {
