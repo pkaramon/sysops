@@ -1,24 +1,19 @@
 #define _XOPEN_SOURCE 700
 
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include "shared_memory_spec.h"
 
 volatile int keep_running = 1;
 
-void sig_handler(int __attribute__((unused)) signum)
-{
-    keep_running = 0;
-}
+void sig_handler(int __attribute__((unused)) signum) { keep_running = 0; }
 
 int setup_printer_queue(print_queue_t* queue)
 {
@@ -31,17 +26,13 @@ int setup_printer_queue(print_queue_t* queue)
         return -1;
     }
     if (sem_init(&full, 1, 0) < 0) {
-        sem_close(&mutex);
-        sem_close(&empty);
+        sem_destroy(&mutex);
+        sem_destroy(&empty);
         return -1;
     }
 
-    print_queue_t q = {.head = 0,
-                       .tail = 0,
-                       .jobs = {{0}},
-                       .mutex = mutex,
-                       .empty = empty,
-                       .full = full};
+    print_queue_t q = {
+        .head = 0, .tail = 0, .jobs = {{0}}, .mutex = mutex, .empty = empty, .full = full};
     *queue = q;
     return 0;
 }
@@ -56,7 +47,7 @@ void clean_queue(print_queue_t* queue)
 void printer_process(print_queue_t* queue, long printer_id)
 {
     printf("printer %ld is ready \n", printer_id);
-    while (1) {
+    while (keep_running) {
         sem_wait(&queue->full);
         sem_wait(&queue->mutex);
 
@@ -68,11 +59,9 @@ void printer_process(print_queue_t* queue, long printer_id)
         sem_post(&queue->mutex);
         sem_post(&queue->empty);
 
-
         printf("printer %ld got job %s\n", printer_id, job);
 
-        for (int i = 0; i < PRINTER_BUFFER_SIZE-1; i++)
-        {
+        for (int i = 0; i < PRINTER_BUFFER_SIZE - 1; i++) {
             printf("%c", job[i]);
             fflush(stdout);
             sleep(1);
@@ -83,6 +72,10 @@ void printer_process(print_queue_t* queue, long printer_id)
 
 int main(int argc, char const* argv[])
 {
+    for (int i = 1; i < SIGRTMAX; i++) {
+        signal(i, sig_handler);
+    }
+
     if (argc < 2) {
         fprintf(stderr, "correct usage: %s <number of printers>\n", argv[0]);
         return EXIT_FAILURE;
@@ -108,6 +101,7 @@ int main(int argc, char const* argv[])
 
     print_queue_t* printer_queue =
         mmap(NULL, sizeof(print_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+
     if (printer_queue == MAP_FAILED) {
         perror("mmap");
         shm_unlink(SHM_NAME);
@@ -130,19 +124,14 @@ int main(int argc, char const* argv[])
         }
         else if (pid == 0) {
             printer_process(printer_queue, i);
-        } else {
+        }
+        else {
             pids[i] = pid;
         }
     }
 
-    for (int i = 1; i < SIGRTMAX; i++) {
-        signal(i, sig_handler);
-    }
-    
-
-    while(keep_running)
+    while (keep_running)
         ;
-
 
     for (long i = 0; i < n_printers; i++) {
         if (pids[i] != 0) {

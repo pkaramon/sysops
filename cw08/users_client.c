@@ -6,7 +6,6 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -31,7 +30,7 @@ void generate_random_text(char *buf, int size)
 void user_process(print_queue_t* queue, long user_id) {
     srand(time(NULL) + user_id);
     printf("user %ld is ready\n", user_id);
-    while(1) {
+    while(keep_running) {
         char buf[PRINTER_BUFFER_SIZE];
         generate_random_text(buf, PRINTER_BUFFER_SIZE);
 
@@ -51,12 +50,14 @@ void user_process(print_queue_t* queue, long user_id) {
 
 int main(int argc, char const* argv[])
 {
+    for (int i = 0; i < SIGRTMAX; i++) {
+        signal(i, sig_handler);
+    }
+
     if (argc < 2) {
         fprintf(stderr, "correct usage: %s <number of users>\n", argv[0]);
         return EXIT_FAILURE;
     }
-
-    
 
     long n_users = strtol(argv[1], NULL, 10);
     if (n_users <= 0) {
@@ -70,12 +71,6 @@ int main(int argc, char const* argv[])
         return EXIT_FAILURE;
     }
 
-    if (ftruncate(shm_fd, sizeof(print_queue_t))) {
-        perror("ftruncate");
-        shm_unlink(SHM_NAME);
-        return EXIT_FAILURE;
-    }
-
     print_queue_t* printer_queue =
         mmap(NULL, sizeof(print_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if (printer_queue == MAP_FAILED) {
@@ -83,7 +78,6 @@ int main(int argc, char const* argv[])
         shm_unlink(SHM_NAME);
         return EXIT_FAILURE;
     }
-
 
     pid_t* pids = calloc(n_users,  sizeof(pid_t));
     for (long i = 0; i < n_users; i++)
@@ -99,10 +93,9 @@ int main(int argc, char const* argv[])
     }
     
 
-    for (int i = 0; i < SIGRTMAX; i++) {
-        signal(i, sig_handler);
-    }
-    while(keep_running);
+    while(keep_running)
+        ;
+
     for (long i = 0; i < n_users; i++)
     {
         if(pids[i] != 0) {
