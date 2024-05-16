@@ -19,8 +19,6 @@ typedef struct {
     int end;    // exclusive
 } thread_args_t;
 
-void sig_handler(int signo) {}
-
 void *compute_part_of_grid(void *t_args)
 {
     sigset_t set;
@@ -103,7 +101,9 @@ int main(int argc, char const *argv[])
         // Step simulation
         // Send signal to all threads
         for (long i = 0; i < n_threads; i++) {
-            pthread_kill(threads[i], SIGUSR1);
+            if (pthread_kill(threads[i], SIGUSR1) != 0) {
+                fprintf(stderr, "could not send signal to thread %ld\n", i);
+            }
         }
 
         usleep(500 * 1000);

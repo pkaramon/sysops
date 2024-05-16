@@ -49,7 +49,6 @@ void printer_process(print_queue_t* queue, long printer_id)
     printf("printer %ld is ready \n", printer_id);
     while (keep_running) {
         sem_wait(&queue->full);
-        //
         sem_wait(&queue->mutex);
 
         char job[PRINTER_BUFFER_SIZE] = {0};
